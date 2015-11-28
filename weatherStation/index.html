@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+
+body {
+    font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+.templine {
+    fill: none;
+    stroke-width: 1.5px;
+    stroke: #3182bd;
+}
+
+.humline {
+    fill: none;
+    stroke-width: 1.5px;
+    stroke: #31a354;
+}
+
+img {
+    width: 100%;	
+}
+
+h1 {
+    margin: 1em 0 0.5em 0;
+    color: #343434;
+    font-weight: normal;
+    font-family: 'Ultra', sans-serif;
+    font-size: 36px;
+    line-height: 42px;
+    text-transform: uppercase;
+    text-shadow: 0 1px white, 0 2px #777;
+}
+
+</style>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container" id="main-container">
+    <div class="content">
+      <div class="row">
+        <h1>4gn3s Raspberry PI mini weather station</h1>
+        <p>Last update on <b id="lastupdate"></b> <span id="status"></span></p>
+      </div>
+      <div class="row">
+        <div class="col-md-6" id="temp-container">
+          <h2>Temperature</h2>
+          <ul class="list-unstyled">
+            <li>MIN:<span id="mintemp"></span>&deg;C</li>
+            <li>MAX:<span id="maxtemp"></span>&deg;C</li>
+          </ul>
+        </div>
+        <div class="col-md-6" id="hum-container">
+          <h2>Humidity</h2>
+          <ul class="list-unstyled">
+            <li>MIN:<span id="minhum"></span>%</li>
+            <li>MAX:<span id="maxhum"></span>%</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<img src="IMG_20150907_183407~2.jpg" alt="the device" />
+	</div>
+	<div class="col-md-3"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script>
+
+var margin = {top: 30, right: 20, bottom: 30, left: 50},
+    width = 600 - margin.left - margin.right,
+    height = 270 - margin.top - margin.bottom;
+
+var parseTimestamp = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ").parse;
+
+var x = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+
+var color = d3.scale.category10();
+
+var templine = d3.svg.line()
+  .x(function(d) { return x(d.timestamp) })
+  .y(function(d) { return y(d.temperature) });
+
+var humline = d3.svg.line()
+  .x(function(d) { return x(d.timestamp) })
+  .y(function(d) { return y(d.humidity) });
+
+var tempChart = d3.select("#temp-container")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+var humChart = d3.select("#hum-container")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+var url = "https://data.sparkfun.com/output/ZGx500Yd3KSZg828zlYq.json?page=1";
+d3.json(url, function (error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d) {
+          d.timestamp = parseTimestamp(d.timestamp);
+          d.temperature = +d.temperature;
+          d.humidity = +d.humidity;
+      });
+
+  var tempMargin = 3;
+  var humMargin = 5;
+
+  var mintemp = d3.min(data, function(d, i){ return d.temperature });
+  var maxtemp = d3.max(data, function(d, i){ return d.temperature });
+
+  var minhum = d3.min(data, function(d, i){ return d.humidity });
+  var maxhum = d3.max(data, function(d, i){ return d.humidity });
+
+  var lastupdate = d3.max(data, function(d, i){ return d.timestamp });
+
+  $("#mintemp").text(mintemp);
+  $("#maxtemp").text(maxtemp);
+
+  $("#minhum").text(minhum);
+  $("#maxhum").text(maxhum);
+
+  $("#lastupdate").text(lastupdate.toLocaleString());
+
+  updateStatus(lastupdate);
+
+  x.domain(d3.extent(data, function(d){ return d.timestamp }));
+  y.domain([mintemp - tempMargin, maxtemp + tempMargin]);
+
+  tempChart.selectAll("dot").data(data).enter().append("circle")
+        .style("fill", "#c6dbef").attr("r", 3.5)
+        .attr("cx", function(d) { return x(d.timestamp); })
+        .attr("cy", function(d) { return y(d.temperature); });
+
+  tempChart.append("path").attr("class", "templine").attr("d", templine(data));
+  tempChart.append("g").attr("class", "x axis").attr("transform", "translate(0, " + height + ")").call(xAxis);
+  tempChart.append("g").attr("class", "y axis").call(yAxis);
+
+  tempChart.append("text").attr("transform", "translate(" + (width/2) + " ," + (height+margin.bottom) + ")")
+        .style("text-anchor", "middle").text("Time");
+
+  tempChart.append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("x", margin.top - (height / 2))
+        .attr("dy", ".71em").style("text-anchor", "end").text("Temperature [°C]");
+
+  x.domain(d3.extent(data, function(d){ return d.timestamp }));
+  y.domain([minhum - humMargin, maxhum + humMargin]);
+
+  humChart.selectAll("dot").data(data).enter().append("circle")
+        .style("fill", "#c7e9c0").attr("r", 3.5)
+        .attr("cx", function(d) { return x(d.timestamp); })
+        .attr("cy", function(d) { return y(d.humidity); });
+
+  humChart.append("path").attr("class", "humline").attr("d", humline(data));
+  humChart.append("g").attr("class", "x axis").attr("transform", "translate(0, " + height + ")").call(xAxis);
+  humChart.append("g").attr("class", "y axis").call(yAxis);
+
+  humChart.append("text").attr("transform", "translate(" + (width/2) + " ," + (height+margin.bottom) + ")")
+        .style("text-anchor", "middle").text("Time");
+
+  humChart.append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("x", margin.top - (height / 2))
+        .attr("dy", ".71em").style("text-anchor", "end").text("Humidity [%]");
+
+});
+
+function updateStatus(lastupdate){
+    var defaultTimeSpan = 15; //minutes
+
+    var current = new Date();
+    var marginTime = d3.time.minute.offset(current, -defaultTimeSpan);
+    var isactive = lastupdate >= marginTime;
+
+    if(isactive){
+      $("#status").removeClass().addClass("label label-success");
+      $("#status").text("ON");
+    }
+    else{
+      $("#status").removeClass().addClass("label label-danger");
+      $("#status").text("OFF");
+    }
+}
+
+</script>
+
+
+
+</body>
+</html>
