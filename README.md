@@ -1,12 +1,12 @@
 # Building a simple weather station with Raspberry Pi and Python (in the future: Haskell)
 ###############################################################
 
-1. The setup
+## The setup
     * A headless Raspberry Pi 2 connected to the wifi network
     * A AM2303 temperature and humidity sensor
     * Jumper cables
 
-2. Installing software
+## Installing software
 I have OSMC installed on my memory card, so first I needed to install some
 software:
     
@@ -36,7 +36,7 @@ Gathering the DHT22 module for pigpio:
     unzip DHT22_py.zip
 ```
 
-3. Wiring
+## Wiring
 The weather and humidity sensor AM2302 (DHT22) has 3 pins:
     * VCC (+) - input (3V to 5.5V)
     * GND (-) - ground
@@ -45,7 +45,7 @@ The weather and humidity sensor AM2302 (DHT22) has 3 pins:
 ![Raspberry Pi 2 GPIO
 pins](http://www.megaleecher.net/sites/default/files/images/raspberry-pi-rev2-gpio-pinout.jpg)
 
-4. Testing the configuration
+## Testing the configuration
 To perform a simple test if everything works as expected, let's open up
 python3 console and run:
    
@@ -61,10 +61,11 @@ python3 console and run:
     {}%".format(temp, humid))
 ```
 
-5. Gathering data
-New data from the sensor can be obtained every 2 seconds.
+## Gathering data
+New data from the sensor can be obtained every 2 seconds. It is streamed to my sparkfun API account.
 
-6. Visualizing data
-The data is visualized using the D3 library.
+## Visualizing data
+The data is visualized using the D3 library. The results can be viewed here: [https://4gn3s.github.io/weatherStation/](https://4gn3s.github.io/weatherStation/)
+There are separate graphs for temperature and humidity.
 
-7. Final thoughts
+## Final thoughts
