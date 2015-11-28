@@ -2,9 +2,9 @@
 ###############################################################
 
 ## The setup
-    * A headless Raspberry Pi 2 connected to the wifi network
-    * A AM2303 temperature and humidity sensor
-    * Jumper cables
+* A headless Raspberry Pi 2 connected to the wifi network
+* A AM2303 temperature and humidity sensor
+* Jumper cables
 
 ## Installing software
 I have OSMC installed on my memory card, so first I needed to install some
@@ -38,9 +38,9 @@ Gathering the DHT22 module for pigpio:
 
 ## Wiring
 The weather and humidity sensor AM2302 (DHT22) has 3 pins:
-    * VCC (+) - input (3V to 5.5V)
-    * GND (-) - ground
-    * OUT     - data output
+ * VCC (+) - input (3V to 5.5V)
+ * GND (-) - ground
+ * OUT     - data output
 
 ![Raspberry Pi 2 GPIO
 pins](http://www.megaleecher.net/sites/default/files/images/raspberry-pi-rev2-gpio-pinout.jpg)
