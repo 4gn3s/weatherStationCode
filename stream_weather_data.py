@@ -54,7 +54,9 @@ class DataStreamer():
 			with urllib.request.urlopen(request, data) as response:
 				print(response.read().decode('utf-8'))
 		except urllib.error.URLError as e:
-			print("Error", e.reason)
+			print("URL Error ", e.reason)
+		except http.client.BadStatusLine as e:
+			print("BadStatusLine Error ", e.reason)
 	
 	def backup_data(self, data):
 		with open(BACKUP_FILE, 'a') as csvfile:
