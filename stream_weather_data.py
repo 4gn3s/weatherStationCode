@@ -4,6 +4,7 @@ import DHT22
 import json
 import csv
 import time
+import lcddriver
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -22,6 +23,7 @@ class DataStreamer():
 		self.last_humidity = 0
 		self.base_url = 'https://data.sparkfun.com/input/'
 		self.url = self.base_url + public_key + "?private_key=" + private_key
+		self.lcd = lcddriver.lcd()
 	
 	def run(self):
 		queued_data = []
@@ -45,7 +47,20 @@ class DataStreamer():
 				self.last_temperature = data['temperature']
 				self.last_humidity = data['humidity']
 				print("Current temperature {}C, humidity {}%".format(data['temperature'], data['humidity']))
+				self.show_data_lcd(data)
 			time.sleep(INTERVAL)
+	
+	def show_data_lcd(self, data):
+		self.lcd.lcd_clear()
+		full_temp_str = "Current temperature: " + str(data['temperature']) + "C"
+		self.lcd.lcd_display_string(full_temp_str[:19], 1)
+		self.lcd.lcd_display_string("Humidity: " + str(data['humidity']) + "%", 2)
+		for i in range(0, len(full_temp_str)):
+			self.lcd.lcd_clear()
+			text = full_temp_str[i:(i+20)]
+			self.lcd.lcd_display_string(text, 1)
+			self.lcd.lcd_display_string("Humidity: " + str(data['humidity']) + "%", 2)
+			time.sleep(0.2)
 
 	def get_data(self):
 		self.sensor.trigger()
