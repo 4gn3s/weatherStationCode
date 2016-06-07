@@ -1,4 +1,4 @@
-# Building a simple weather station with Raspberry Pi and Python (in the future: Haskell)
+# Building a simple weather station with Raspberry Pi and Python
 ###############################################################
 
 ## The setup
@@ -94,4 +94,19 @@ New data from the sensor can be obtained every 2 seconds. It is streamed to my s
 The data is visualized using the D3 library. The results can be viewed here: [https://4gn3s.github.io/weatherStation/](https://4gn3s.github.io/weatherStation/)
 There are separate graphs for temperature and humidity.
 
-## Final thoughts
+## Ideas for the future
+
+### More sensors to measure:
+* wind & speed direction
+* light cycles
+* air quality
+* barometric pressure
+
+### Data gathering
+How does the temperature in my room vary between day and night, weekdays and weekend?
+
+### Full webapp
+* get a touch display
+* view radar images from the internet (served as gifs)
+* show alerts (from wunderground)
+
