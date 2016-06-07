@@ -10,6 +10,7 @@ import urllib.error
 
 GPIO_PIN = 4
 INTERVAL = 60  # seconds
+SPARKFUN_REQUEST_INTERVAL = 2
 JSON_CONFIG = "sparkfun.json"
 BACKUP_FILE = "backup_sensor.csv"
 
@@ -23,10 +24,23 @@ class DataStreamer():
 		self.url = self.base_url + public_key + "?private_key=" + private_key
 	
 	def run(self):
+		queued_data = []
 		while True:
+			if len(queued_data) > 0:
+				print("Has to resend %s packages" % len(queued_data))
+				temp_queued_data = []
+				while len(queued_data) > 0:
+					data = queued_data.pop()  # the ones the longest in the list are the oldest ones
+					if not self.stream_data(data):  # if not successful, queue it again
+						temp_queued_data.append(data)
+					time.sleep(SPARKFUN_REQUEST_INTERVAL)
+				queued_data = temp_queued_data
+				print("Managed to reduce the queue size to %s" % len(queued_data))
 			data = self.get_data()
 			if data['temperature'] != self.last_temperature or data['humidity'] != self.last_humidity:
-				self.stream_data(data)
+				if not self.stream_data(data):
+					print("Error sending %s, queueing" % data)
+					queued_data.append(data)
 				self.backup_data(data)
 				self.last_temperature = data['temperature']
 				self.last_humidity = data['humidity']
@@ -55,8 +69,11 @@ class DataStreamer():
 				print(response.read().decode('utf-8'))
 		except urllib.error.URLError as e:
 			print("URL Error ", e.reason)
+			return False
 		except http.client.BadStatusLine as e:
 			print("BadStatusLine Error ", e.reason)
+			return False
+		return True
 	
 	def backup_data(self, data):
 		with open(BACKUP_FILE, 'a') as csvfile:
