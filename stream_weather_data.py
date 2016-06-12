@@ -49,6 +49,16 @@ class DataStreamer():
 				print("Current temperature {}C, humidity {}%".format(data['temperature'], data['humidity']))
 				self.show_data_lcd(data)
 			time.sleep(INTERVAL)
+
+	def center_string(self, string):
+		str_len = len(string)
+		if str_len > 20:
+			return string[:19]
+		spaces_needed = 20 - str_len
+		mod = 0
+		if spaces_needed % 2 != 0:
+			mod = 1
+		return " " * (spaces_needed // 2) + string + " " * (spaces_needed // 2 + mod)
 	
 	def show_data_lcd(self, data):
 		self.lcd.lcd_clear()
@@ -56,10 +66,9 @@ class DataStreamer():
 		self.lcd.lcd_display_string(full_temp_str[:19], 1)
 		self.lcd.lcd_display_string("Humidity: " + str(data['humidity']) + "%", 2)
 		for i in range(0, len(full_temp_str)):
-			self.lcd.lcd_clear()
 			text = full_temp_str[i:(i+20)]
-			self.lcd.lcd_display_string(text, 1)
-			self.lcd.lcd_display_string("Humidity: " + str(data['humidity']) + "%", 2)
+			self.lcd.lcd_display_string(self.center_string(text), 1)
+			self.lcd.lcd_display_string(self.center_string("Humidity: " + str(data['humidity']) + "%"), 2)
 			time.sleep(0.2)
 
 	def get_data(self):
