@@ -1,6 +1,7 @@
-import i2c_lib
 from time import *
- 
+
+import i2c_lib
+
 # LCD Address
 ADDRESS = 0x27
  
