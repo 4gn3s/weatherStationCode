@@ -1,36 +1,47 @@
 # -*- coding: utf-8 -*-
+import threading
+
+import time
+from queue import Queue
+
 from utils import lcddriver
 
 
 class LCDDisplayManager:
     def __init__(self):
         self.lcd = lcddriver.lcd()
-        self.framebuffer = ["", ""] # 2 lines LCD
-        self.row_size = 16 # number of letters in a row of the LCD display
+        self.framebuffer = ["", ""]  # 2 lines LCD
+        self.scroll_index = [0, 0]
+        self.row_size = 16  # number of letters in a row of the LCD display
+        self.writing_thread = threading.Thread(target=self.show, args=(), kwargs={})
+        self.queue = Queue()
+        self.writing_thread.start()
 
-    def show(self, data):
+    def display_message(self, data):
+        self.queue.put(data)
+
+    def show(self):
+        data = self.queue.get()
         self.set_framebuffer(data)
-        index = 1
-        for line in self.framebuffer:
-            to_display_str = self.center_string(line)
-            print(len(to_display_str))
-            print(to_display_str)
-            self.lcd.lcd_display_string(to_display_str, index)
-            index += 1
+        while True:
+            for line_index, line in enumerate(self.framebuffer):
+                i = self.scroll_index[line_index]
+                to_display_str = line[i : (i + self.row_size)]
+                self.lcd.lcd_display_string(to_display_str, line_index + 1)
+                self.scroll_index[line_index] += 1
+                if self.scroll_index[line_index] > len(line):
+                    self.scroll_index[line_index] = 0
+            time.sleep(0.3)
 
     def set_framebuffer(self, data):
-        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C"
-        self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%"
+        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C" + " " * self.row_size
+        self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%" + " " * self.row_size
+        self.scroll_index = [0, 0]
 
     def loop_string(self, string):
         pass
-        #
-        # self.lcd.lcd_display_string(full_temp_str[:19], 1)
-        # self.lcd.lcd_display_string(, 2)
         # for i in range(0, len(full_temp_str)):
         #     text = full_temp_str[i:(i + 20)]
-        #     self.lcd.lcd_display_string(self.center_string(text), 1)
-        #     self.lcd.lcd_display_string(self.center_string("Humidity: " + str(data['humidity']) + "%"), 2)
         #     time.sleep(0.2)
 
     def center_string(self, string):
