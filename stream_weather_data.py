@@ -2,7 +2,7 @@
 import csv
 import json
 import time
-import pigpiod
+import pigpio
 
 import urllib.error
 import urllib.parse
