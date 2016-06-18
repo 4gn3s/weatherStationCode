@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from utils import lcddriver
 
 
@@ -18,7 +19,7 @@ class LCDDisplayManager:
             index += 1
 
     def set_framebuffer(self, data):
-        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + u"\u00b0" + "C"
+        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C"
         self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%"
 
     def loop_string(self, string):
