@@ -27,29 +27,27 @@ class LCDDisplayManager:
         while True:
             for line_index, line in enumerate(self.framebuffer):
                 i = self.scroll_index[line_index]
-                to_display_str = line[i : (i + self.row_size)]
-                self.lcd.lcd_display_string(to_display_str, line_index + 1)
-                self.scroll_index[line_index] += 1
-                if self.scroll_index[line_index] > len(line):
-                    self.scroll_index[line_index] = 0
+                if i != -1:
+                    to_display_str = line[i: (i + self.row_size)]
+                    self.lcd.lcd_display_string(to_display_str, line_index + 1)
+                    self.scroll_index[line_index] += 1
+                    if self.scroll_index[line_index] > len(line):
+                        self.scroll_index[line_index] = 0
+                else:
+                    self.lcd.lcd_display_string(line, line_index + 1)
             time.sleep(0.3)
 
     def set_framebuffer(self, data):
-        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C"
+        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "C"
         self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%"
-        self.scroll_index = [0, 0]
         for line_index, line in enumerate(self.framebuffer):
             line_len = len(line)
             if line_len > self.row_size:
                 self.framebuffer[line_index] = line + self.margin * " "
+                self.scroll_index[line_index] = 0
             elif line_len < self.row_size:
                 self.framebuffer[line_index] = self.center_string(line)
-
-    def loop_string(self, string):
-        pass
-        # for i in range(0, len(full_temp_str)):
-        #     text = full_temp_str[i:(i + 20)]
-        #     time.sleep(0.2)
+                self.scroll_index[line_index] = -1
 
     def center_string(self, string):
         str_len = len(string)
