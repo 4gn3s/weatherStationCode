@@ -13,6 +13,7 @@ class LCDDisplayManager:
         self.framebuffer = ["", ""]  # 2 lines LCD
         self.scroll_index = [0, 0]
         self.row_size = 16  # number of letters in a row of the LCD display
+        self.margin = 5  # how many spaces should be displayed in a loop
         self.writing_thread = threading.Thread(target=self.show, args=(), kwargs={})
         self.queue = Queue()
         self.writing_thread.start()
@@ -34,9 +35,15 @@ class LCDDisplayManager:
             time.sleep(0.3)
 
     def set_framebuffer(self, data):
-        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C" + " " * self.row_size
-        self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%" + " " * self.row_size
+        self.framebuffer[0] = "Temperature: " + str(data['temperature']) + "°C"
+        self.framebuffer[1] = "Humidity: " + str(data['humidity']) + "%"
         self.scroll_index = [0, 0]
+        for line_index, line in enumerate(self.framebuffer):
+            line_len = len(line)
+            if line_len > self.row_size:
+                self.framebuffer[line_index] = line + self.margin * " "
+            elif line_len < self.row_size:
+                self.framebuffer[line_index] = self.center_string(line)
 
     def loop_string(self, string):
         pass
