@@ -5,7 +5,7 @@ class LCDDisplayManager:
     def __init__(self):
         self.lcd = lcddriver.lcd()
         self.framebuffer = ["", ""] # 2 lines LCD
-        self.row_size = 20 # 20 letters wide LCD display
+        self.row_size = 16 # number of letters in a row of the LCD display
 
     def show(self, data):
         self.set_framebuffer(data)
@@ -34,9 +34,9 @@ class LCDDisplayManager:
 
     def center_string(self, string):
         str_len = len(string)
-        if str_len > 20:
-            return string[:19]
-        spaces_needed = 20 - str_len
+        if str_len > self.row_size:
+            return string[:self.row_size-1]
+        spaces_needed = self.row_size - str_len
         mod = 0
         if spaces_needed % 2 != 0:
             mod = 1
