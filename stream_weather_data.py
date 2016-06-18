@@ -52,7 +52,7 @@ class DataStreamer():
                 self.last_humidity = data['humidity']
                 print("Current temperature {}C, humidity {}%".format(data['temperature'], data['humidity']))
                 if self.show_on_lcd:
-                    self.lcd_display_manager.show(data)
+                    self.lcd_display_manager.display_message(data)
             time.sleep(INTERVAL)
 
     def get_data(self):
