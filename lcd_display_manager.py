@@ -11,7 +11,10 @@ class LCDDisplayManager:
         self.set_framebuffer(data)
         index = 1
         for line in self.framebuffer:
-            self.lcd.lcd_display_string(self.center_string(line), index)
+            to_display_str = self.center_string(line)
+            print(len(to_display_str))
+            print(to_display_str)
+            self.lcd.lcd_display_string(to_display_str, index)
             index += 1
 
     def set_framebuffer(self, data):
