@@ -137,20 +137,24 @@ d3.json(url, function (error, data) {
           d.humidity = +d.humidity;
       });
 
-  var mostRecent = data[0].timestamp;
-
   function areCloseTimestamps(t1, t2){
-    return t2 < d3.time.hour.offset(t1, 1);
+    var day = 60 * 60 * 24;
+    return Math.abs(t1 - t2) < day;
   }
 
-  function filterByTimestamp(element, index, array){
-    if(index == 0){
-      return true;
+  var mostRecent = data[0].timestamp;
+  var toSliceIndex = data.length;
+
+  for(var i = 1; i < data.length; i++){
+    if(!areCloseTimestamps(mostRecent, data[i].timestamp)){
+        toSliceIndex = i;
+        break;
     }
-    return areCloseTimestamps(array[index-1].timestamp, array[index].timestamp);
+    mostRecent = data[i].timestamp;
   }
 
-  data.filter(filterByTimestamp);
+  console.log(toSliceIndex);
+  data = data.slice(0, toSliceIndex);
 
   var tempMargin = 3;
   var humMargin = 5;
