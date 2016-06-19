@@ -91,7 +91,7 @@ python3 console and run:
 New data from the sensor can be obtained every 2 seconds. It is streamed to my sparkfun API account.
 
 ## Visualizing data
-The data is visualized using the D3 library. The results can be viewed here: [https://4gn3s.github.io/weatherStation/](https://4gn3s.github.io/weatherStation/)
+The data is visualized using the D3 library. The results can be viewed here: [https://4gn3s.github.io/weatherStationCode/](https://4gn3s.github.io/weatherStationCode/)
 There are separate graphs for temperature and humidity.
 
 ## Ideas for the future

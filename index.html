@@ -137,6 +137,21 @@ d3.json(url, function (error, data) {
           d.humidity = +d.humidity;
       });
 
+  var mostRecent = data[0].timestamp;
+
+  function areCloseTimestamps(t1, t2){
+    return t2 < d3.time.hour.offset(t1, 1);
+  }
+
+  function filterByTimestamp(element, index, array){
+    if(index == 0){
+      return True;
+    }
+    return areCloseTimestamps(array[index-1].timestamp, array[index].timestamp);
+  }
+
+  data.filter(filterByTimestamp);
+
   var tempMargin = 3;
   var humMargin = 5;
 
