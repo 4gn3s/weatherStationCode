@@ -145,7 +145,7 @@ d3.json(url, function (error, data) {
 
   function filterByTimestamp(element, index, array){
     if(index == 0){
-      return True;
+      return true;
     }
     return areCloseTimestamps(array[index-1].timestamp, array[index].timestamp);
   }
