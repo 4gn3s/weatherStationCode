@@ -3,7 +3,8 @@
 
 ## The setup
 * A headless Raspberry Pi 2 connected to the wifi network
-* A AM2303 temperature and humidity sensor
+* An AM2303 temperature and humidity sensor
+* A 16x2 LCD display with LCM1602 I2C converter
 * Jumper cables
 
 ## Installing software
@@ -15,9 +16,9 @@ software:
     sudo apt-get install -y gcc make build-essentials python3 screen
 ```
 
-Install raspi-config as defined [here](https://github.com/snubbegbg/install_raspi-config).
+Next, I installed raspi-config as defined [here](https://github.com/snubbegbg/install_raspi-config).
 
-Installing pigpio:
+Following that, I needed to install pigpio:
 
 ```sh
     wget abyz.co.uk/rpi/pigpio/pigpio.zip
@@ -26,19 +27,14 @@ Installing pigpio:
     sudo make install
 ```
 
+To work properly, the pigpio daemon needs to be running to transfer data.
 Running pigpio (in a new screen window):
 
 ```sh
     sudo pigpiod
 ```
 
-Gathering the DHT22 module for pigpio:
-```sh
-    wget http://abyz.co.uk/rpi/pigpio/code/DHT22_py.zip
-    unzip DHT22_py.zip
-```
-
-Installing smbus:
+To use the LCD display, I needed also to install smbus:
 ```sh
 sudo -i
 apt-get install python3-dev
@@ -54,7 +50,16 @@ python3 setup.py install
 exit
 ```
 
-The next step is to enable i2c via raspi-config: sudo raspi-config , select advance menu, select i2c, then enable it.
+The next step was to enable i2c via raspi-config: 
+
+```
+sudo raspi-config
+```
+
+Then:
+ * select advance menu
+ * select i2c
+ * enable it.
 
 Use:
 ```sh
@@ -67,6 +72,25 @@ The weather and humidity sensor AM2302 (DHT22) has 3 pins:
  * VCC (+) - input (3V to 5.5V)
  * GND (-) - ground
  * OUT     - data output
+
+| DTH22 pin | RPI pin |
+|-----------|---------|
+| VCC       | 1       |
+| GND       | 6       |
+| OUT       | 7       |
+
+The LCD display has 4 pins:
+ * VCC - input (5V)
+ * SDA - I2C data
+ * SCL - I2C clock
+ * GND - ground
+
+| LCM1602 pin | RPI pin |
+|-------------|---------|
+| VCC         | 2       |
+| SDA         | 3       |
+| SCL         | 5       |
+| GND         | 25      |
 
 ![Raspberry Pi 2 GPIO
 pins](http://www.megaleecher.net/sites/default/files/images/raspberry-pi-rev2-gpio-pinout.jpg)
@@ -101,12 +125,16 @@ There are separate graphs for temperature and humidity.
 * light cycles
 * air quality
 * barometric pressure
+* rain
 
-### Data gathering
-How does the temperature in my room vary between day and night, weekdays and weekend?
+### Data gathering ideas
+
+* How does the temperature in my room vary between day and night, weekdays and weekend?
+* In which months there is the most rain? Which are the driest?
+* How does air quality change depending on the season? Is it the worst in the winter?
 
 ### Full webapp
-* get a touch display
 * view radar images from the internet (served as gifs)
 * show alerts (from wunderground)
+* show weather forecast (from openweathermap)
 
